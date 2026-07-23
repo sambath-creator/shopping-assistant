@@ -3,7 +3,7 @@ package com.sambath.shoppingassistant.data
 import java.util.UUID
 
 data class ShoppingItem(
-    val id: Long = UUID.randomUUID().toString(),
+    val id: String = UUID.randomUUID().toString(),
     val name: String,
     val imageUrl: String = imageFor(name),
     val options: List<PriceOption> = emptyList()
