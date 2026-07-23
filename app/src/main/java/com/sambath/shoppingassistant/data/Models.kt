@@ -1,9 +1,7 @@
 package com.sambath.shoppingassistant.data
 
-import java.util.UUID
-
 data class ShoppingItem(
-    val id: String = UUID.randomUUID().toString(),
+    val id: Long = System.currentTimeMillis() + Random.nextLong(100000),
     val name: String,
     val imageUrl: String = imageFor(name),
     val options: List<PriceOption> = emptyList()
