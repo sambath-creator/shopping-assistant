@@ -1,6 +1,6 @@
-import java.util.UUID
-
 package com.sambath.shoppingassistant.data
+
+import java.util.UUID
 
 data class ShoppingItem(
     val id: Long = UUID.randomUUID().toString(),
