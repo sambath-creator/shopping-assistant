@@ -1,5 +1,7 @@
 package com.sambath.shoppingassistant.data
 
+import kotlin.random.Random
+
 data class ShoppingItem(
     val id: Long = System.currentTimeMillis() + Random.nextLong(100000),
     val name: String,
