@@ -11,7 +11,7 @@ class PriceRefreshWorker(
 ) : CoroutineWorker(appContext, workerParams) {
     override suspend fun doWork(): Result {
         val repository = ShoppingRepository.get(applicationContext)
-        repository.refreshPricesNow()
+        repository.refreshPricesNow(notifyOnComplete = true)
         return Result.success()
     }
 }

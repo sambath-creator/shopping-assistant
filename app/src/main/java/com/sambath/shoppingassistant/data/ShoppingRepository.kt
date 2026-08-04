@@ -20,6 +20,11 @@ class ShoppingRepository private constructor(context: Context) {
 
     val state: StateFlow<ShoppingState> = _state
 
+    init {
+        ShoppingScheduler.schedule(appContext, _state.value.schedule)
+        com.sambath.shoppingassistant.notification.NotificationHelper.createChannel(appContext)
+    }
+
     fun addItem(name: String) {
         val cleaned = name.trim()
         if (cleaned.isBlank()) return
@@ -49,13 +54,27 @@ class ShoppingRepository private constructor(context: Context) {
 
     fun refreshPrices() {
         scope.launch {
-            refreshPricesNow()
+            refreshPricesNow(notifyOnComplete = false)
         }
     }
 
-    suspend fun refreshPricesNow() {
+    suspend fun refreshPricesNow(notifyOnComplete: Boolean = false) {
         _state.update { it.copy(isRefreshing = true, lastRunSummary = "Researching latest options...") }
-        val refreshed = _state.value.items.map { agent.findBestOptions(it) }
+        val currentItems = _state.value.items
+        val refreshed = currentItems.map { item ->
+            agent.findBestOptionsSafe(item).getOrElse { error ->
+                item.copy(
+                    options = listOf(
+                        PriceOption(
+                            store = "Unavailable",
+                            price = "—",
+                            url = "https://www.google.com/search?q=${item.name.replace(" ", "+")}+price",
+                            note = error.message ?: "Price lookup failed"
+                        )
+                    )
+                )
+            }
+        }
         _state.update {
             it.copy(
                 items = refreshed,
@@ -64,6 +83,12 @@ class ShoppingRepository private constructor(context: Context) {
             )
         }
         persist()
+        if (notifyOnComplete) {
+            com.sambath.shoppingassistant.notification.NotificationHelper.showRefreshComplete(
+                appContext,
+                refreshed.size
+            )
+        }
     }
 
     private fun persist() {
