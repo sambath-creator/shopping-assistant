@@ -34,6 +34,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -431,13 +432,16 @@ private fun ItemCard(
                     shape = RoundedCornerShape(14.dp)
                 )
                 Spacer(Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    GradientButton(
-                        onClick = { onRenameItem(item.id, draft) },
-                        gradient = AccentGradient,
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Save")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    IconButton(onClick = { onRenameItem(item.id, draft) }) {
+                        Icon(
+                            Icons.Default.Check,
+                            contentDescription = "Save",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                     IconButton(onClick = { onRemoveItem(item.id) }) {
                         Icon(Icons.Default.Delete, contentDescription = "Remove ${item.name}")
