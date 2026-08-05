@@ -17,7 +17,7 @@ android {
         buildConfigField(
             "String",
             "PRICE_API_BASE_URL",
-            "\"https://shopping-assistant-api.vercel.app\""
+            "\"https://uk-shopping-assistant.vercel.app\""
         )
     }
 
