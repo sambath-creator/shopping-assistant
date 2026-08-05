@@ -63,6 +63,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -82,11 +84,22 @@ import com.sambath.shoppingassistant.ui.components.rememberSpringPressState
 import com.sambath.shoppingassistant.ui.components.springPress
 import com.sambath.shoppingassistant.ui.theme.ShoppingAssistantTheme
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        var keepSplashScreen = true
         val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { keepSplashScreen }
         super.onCreate(savedInstanceState)
+        
+        lifecycleScope.launch {
+            delay(1500)
+            keepSplashScreen = false
+        }
+
         NotificationHelper.createChannel(this)
         setContent {
             ShoppingAssistantTheme {
@@ -201,10 +214,22 @@ private fun Header(state: ShoppingState, onRefresh: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
+                val twoToneBrush = remember {
+                    Brush.linearGradient(
+                        colors = listOf(Color(0xFFF6C86E), Color(0xFF226C63))
+                    )
+                }
                 Text(
                     text = "The Baker Basket",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        shadow = Shadow(
+                            color = Color(0x66000000),
+                            offset = Offset(4f, 6f),
+                            blurRadius = 8f
+                        ),
+                        brush = twoToneBrush
+                    ),
+                    fontWeight = FontWeight.Black
                 )
                 Text(
                     text = "${state.items.size} items tracked",
