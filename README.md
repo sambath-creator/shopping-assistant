@@ -22,6 +22,15 @@ gradle assembleDebug
 
 The CI workflow in `.github/workflows/android.yml` installs Gradle on GitHub Actions and builds `app/build/outputs/apk/debug/app-debug.apk`.
 
-## Price Agent
+## Price Backend
 
-The current `PriceAgent` is a replaceable prototype that generates ranked sample results and attaches store search links for Sainsbury's, Asda, Aldi, Lidl, Morrisons, Amazon, and Vanilla Valley. Replace `app/src/main/java/com/sambath/shoppingassistant/data/PriceAgent.kt` with a real backend/API-backed implementation when production price data access is available.
+The app is powered by a Node.js Express backend deployed as a Serverless Function on **Vercel**. 
+The backend connects to the **SerpApi Google Shopping API** (`https://serpapi.com/search.json`) to fetch real-time, live prices across UK supermarkets and online suppliers. 
+
+The backend returns the top 3 cheapest live options for each item, including the exact product description (quantity/size) and a direct link to the retailer's product page. 
+
+If the backend fails to connect to SerpApi (or the API key is missing), it loudly fails with an error payload for easy debugging.
+
+### Environment Setup
+
+For the backend to function, you must set the `SERPAPI_KEY` environment variable in your Vercel Project settings (make sure it's applied to the Production environment).
