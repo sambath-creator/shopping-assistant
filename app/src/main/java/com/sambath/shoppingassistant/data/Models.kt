@@ -1,7 +1,9 @@
 package com.sambath.shoppingassistant.data
 
+import java.util.UUID
+
 data class ShoppingItem(
-    val id: Long = System.currentTimeMillis(),
+    val id: Long = UUID.randomUUID().mostSignificantBits,
     val name: String,
     val imageUrl: String = imageFor(name),
     val options: List<PriceOption> = emptyList()
@@ -37,11 +39,11 @@ data class ShoppingState(
 )
 
 val defaultItems = listOf(
-    ShoppingItem(name = "Strong white bread flour"),
-    ShoppingItem(name = "Unsalted butter"),
-    ShoppingItem(name = "Caster sugar"),
-    ShoppingItem(name = "Free range eggs"),
-    ShoppingItem(name = "Dark chocolate chips")
+    ShoppingItem(id = 1L, name = "Strong white bread flour"),
+    ShoppingItem(id = 2L, name = "Unsalted butter"),
+    ShoppingItem(id = 3L, name = "Caster sugar"),
+    ShoppingItem(id = 4L, name = "Free range eggs"),
+    ShoppingItem(id = 5L, name = "Dark chocolate chips")
 )
 
 fun imageFor(itemName: String): String {
