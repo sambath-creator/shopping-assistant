@@ -36,10 +36,9 @@ app.post('/v1/prices/search', async (req, res) => {
     const trimmedQuery = query.trim();
     const apiKey = process.env.SERPAPI_KEY;
 
-    // If no API key is provided, fallback to the mock logic so the app doesn't crash
+    // If no API key is provided, fail loudly for debugging
     if (!apiKey) {
-        console.warn("No SERPAPI_KEY found, falling back to mock data.");
-        return serveMockData(req, res, trimmedQuery, limit, "DEBUG: SERPAPI_KEY environment variable is missing");
+        return res.status(500).json({ error: "SERPAPI_KEY environment variable is missing in Vercel." });
     }
 
     try {
@@ -53,14 +52,13 @@ app.post('/v1/prices/search', async (req, res) => {
         const response = await fetch(url);
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("SerpApi error:", errorText);
-            return serveMockData(req, res, trimmedQuery, limit, `DEBUG API ERROR: ${response.status} - ${errorText.substring(0, 100)}`);
+            return res.status(500).json({ error: `SerpApi returned ${response.status}`, details: errorText });
         }
 
         const data = await response.json();
         
         if (!data.shopping_results || data.shopping_results.length === 0) {
-            return serveMockData(req, res, trimmedQuery, limit, "DEBUG: SerpApi returned empty shopping_results");
+            return res.status(500).json({ error: "SerpApi returned empty shopping_results", full_response: data });
         }
 
         let imageUrl = null;
@@ -84,7 +82,7 @@ app.post('/v1/prices/search', async (req, res) => {
 
     } catch (error) {
         console.error("Failed to fetch from SerpApi:", error);
-        return serveMockData(req, res, trimmedQuery, limit, `DEBUG ERROR: ${error.message}`);
+        return res.status(500).json({ error: "Exception while calling SerpApi", details: error.message });
     }
 });
 
