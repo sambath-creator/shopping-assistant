@@ -73,7 +73,7 @@ app.post('/v1/prices/search', async (req, res) => {
                 store: item.source || 'Unknown Store',
                 price: `GBP ${priceVal}`,
                 url: item.product_link || item.link || item.offer_page_url || '',
-                note: item.delivery || 'Live SerpApi result'
+                note: item.title || item.delivery || 'Live SerpApi result'
             };
         });
 
