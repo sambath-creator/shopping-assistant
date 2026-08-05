@@ -200,7 +200,7 @@ private fun Header(state: ShoppingState, onRefresh: () -> Unit) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Baker Basket",
+                    text = "The Baker Basket",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -477,7 +477,13 @@ private fun PriceRow(rank: Int, option: PriceOption) {
         modifier = Modifier
             .fillMaxWidth()
             .springPress(state = rowPress) {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(option.url)))
+                if (option.url.isNotBlank()) {
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(option.url)))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             },
         shadowElevation = rowPress.elevation()
     ) {
@@ -490,7 +496,7 @@ private fun PriceRow(rank: Int, option: PriceOption) {
                 Text("#$rank ${option.store}", fontWeight = FontWeight.SemiBold)
                 Text(
                     option.note,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodySmall
                 )
@@ -501,7 +507,13 @@ private fun PriceRow(rank: Int, option: PriceOption) {
                 color = MaterialTheme.colorScheme.primary
             )
             IconButton(onClick = {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(option.url)))
+                if (option.url.isNotBlank()) {
+                    try {
+                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(option.url)))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }) {
                 Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = "Open ${option.store}")
             }

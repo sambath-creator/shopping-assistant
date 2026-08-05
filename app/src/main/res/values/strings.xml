@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Baker Basket</string>
+    <string name="app_name">The Baker Basket</string>
     <string name="notification_channel_name">Price updates</string>
     <string name="notification_channel_description">Alerts when scheduled price checks finish</string>
     <string name="notification_title">Price check complete</string>

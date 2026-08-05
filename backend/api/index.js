@@ -71,7 +71,7 @@ app.post('/v1/prices/search', async (req, res) => {
             const priceVal = item.extracted_price || item.price;
             return {
                 store: item.source || 'Unknown Store',
-                price: `GBP ${priceVal}`,
+                price: `£${priceVal}`,
                 url: item.product_link || item.link || item.offer_page_url || '',
                 note: item.title || item.delivery || 'Live SerpApi result'
             };
@@ -96,13 +96,13 @@ function serveMockData(req, res, query, limit, debugMessage = null) {
         const pence = 120 + ((seed / (index + 3)) % 620);
         return {
             store: store.name,
-            price: `GBP ${(pence / 100.0).toFixed(2)}`,
+            price: `£${(pence / 100.0).toFixed(2)}`,
             url: store.url.replace('%s', encodedQuery),
             note: (debugMessage && index === 0) ? debugMessage : (index < 5 ? "UK supermarket result" : "Online result")
         };
     }).sort((a, b) => {
-        const priceA = parseFloat(a.price.replace('GBP ', ''));
-        const priceB = parseFloat(b.price.replace('GBP ', ''));
+        const priceA = parseFloat(a.price.replace('£', ''));
+        const priceB = parseFloat(b.price.replace('£', ''));
         return priceA - priceB;
     });
 
