@@ -26,7 +26,7 @@ function hashString(str) {
     return Math.abs(hash);
 }
 
-app.post('/v1/prices/search', (req, res) => {
+app.post('/v1/prices/search', async (req, res) => {
     const { query, limit = 3 } = req.body;
     
     if (!query || query.trim() === '') {
@@ -34,8 +34,62 @@ app.post('/v1/prices/search', (req, res) => {
     }
 
     const trimmedQuery = query.trim();
-    const encodedQuery = encodeURIComponent(trimmedQuery).replace(/%20/g, '+');
-    const seed = hashString(trimmedQuery.toLowerCase());
+    const apiKey = process.env.SERPAPI_KEY;
+
+    // If no API key is provided, fallback to the mock logic so the app doesn't crash
+    if (!apiKey) {
+        console.warn("No SERPAPI_KEY found, falling back to mock data.");
+        return serveMockData(req, res, trimmedQuery, limit);
+    }
+
+    try {
+        const url = new URL('https://serpapi.com/search.json');
+        url.searchParams.append('engine', 'google_shopping');
+        url.searchParams.append('q', trimmedQuery);
+        url.searchParams.append('gl', 'uk'); // Google UK
+        url.searchParams.append('hl', 'en'); 
+        url.searchParams.append('api_key', apiKey);
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            console.error("SerpApi error:", await response.text());
+            return serveMockData(req, res, trimmedQuery, limit);
+        }
+
+        const data = await response.json();
+        
+        if (!data.shopping_results || data.shopping_results.length === 0) {
+            return serveMockData(req, res, trimmedQuery, limit);
+        }
+
+        let imageUrl = null;
+        if (data.shopping_results[0].thumbnail) {
+            imageUrl = data.shopping_results[0].thumbnail;
+        }
+
+        const options = data.shopping_results.slice(0, limit).map(item => {
+            return {
+                store: item.source || 'Unknown Store',
+                price: item.price ? `GBP ${item.price}` : 'GBP 0.00',
+                url: item.link || '',
+                note: item.delivery || 'Live SerpApi result'
+            };
+        });
+
+        res.json({
+            imageUrl: imageUrl,
+            options: options
+        });
+
+    } catch (error) {
+        console.error("Failed to fetch from SerpApi:", error);
+        return serveMockData(req, res, trimmedQuery, limit);
+    }
+});
+
+function serveMockData(req, res, query, limit) {
+    const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
+    const seed = hashString(query.toLowerCase());
 
     const options = STORES.map((store, index) => {
         const pence = 120 + ((seed / (index + 3)) % 620);
@@ -52,10 +106,10 @@ app.post('/v1/prices/search', (req, res) => {
     });
 
     res.json({
-        imageUrl: null, // Let the Android app use its default images
+        imageUrl: null, 
         options: options.slice(0, limit)
     });
-});
+}
 
 // Root endpoint just to verify the server is running
 app.get('/', (req, res) => {
