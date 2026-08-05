@@ -68,10 +68,11 @@ app.post('/v1/prices/search', async (req, res) => {
         }
 
         const options = data.shopping_results.slice(0, limit).map(item => {
+            const priceVal = item.extracted_price || item.price;
             return {
                 store: item.source || 'Unknown Store',
-                price: item.price ? `GBP ${item.price}` : 'GBP 0.00',
-                url: item.link || '',
+                price: `GBP ${priceVal}`,
+                url: item.product_link || item.link || item.offer_page_url || '',
                 note: item.delivery || 'Live SerpApi result'
             };
         });
