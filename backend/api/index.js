@@ -39,7 +39,7 @@ app.post('/v1/prices/search', async (req, res) => {
     // If no API key is provided, fallback to the mock logic so the app doesn't crash
     if (!apiKey) {
         console.warn("No SERPAPI_KEY found, falling back to mock data.");
-        return serveMockData(req, res, trimmedQuery, limit);
+        return serveMockData(req, res, trimmedQuery, limit, "DEBUG: SERPAPI_KEY environment variable is missing");
     }
 
     try {
@@ -52,14 +52,15 @@ app.post('/v1/prices/search', async (req, res) => {
 
         const response = await fetch(url);
         if (!response.ok) {
-            console.error("SerpApi error:", await response.text());
-            return serveMockData(req, res, trimmedQuery, limit);
+            const errorText = await response.text();
+            console.error("SerpApi error:", errorText);
+            return serveMockData(req, res, trimmedQuery, limit, `DEBUG API ERROR: ${response.status} - ${errorText.substring(0, 100)}`);
         }
 
         const data = await response.json();
         
         if (!data.shopping_results || data.shopping_results.length === 0) {
-            return serveMockData(req, res, trimmedQuery, limit);
+            return serveMockData(req, res, trimmedQuery, limit, "DEBUG: SerpApi returned empty shopping_results");
         }
 
         let imageUrl = null;
@@ -83,11 +84,11 @@ app.post('/v1/prices/search', async (req, res) => {
 
     } catch (error) {
         console.error("Failed to fetch from SerpApi:", error);
-        return serveMockData(req, res, trimmedQuery, limit);
+        return serveMockData(req, res, trimmedQuery, limit, `DEBUG ERROR: ${error.message}`);
     }
 });
 
-function serveMockData(req, res, query, limit) {
+function serveMockData(req, res, query, limit, debugMessage = null) {
     const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
     const seed = hashString(query.toLowerCase());
 
@@ -97,7 +98,7 @@ function serveMockData(req, res, query, limit) {
             store: store.name,
             price: `GBP ${(pence / 100.0).toFixed(2)}`,
             url: store.url.replace('%s', encodedQuery),
-            note: index < 5 ? "UK supermarket result" : "Online result"
+            note: (debugMessage && index === 0) ? debugMessage : (index < 5 ? "UK supermarket result" : "Online result")
         };
     }).sort((a, b) => {
         const priceA = parseFloat(a.price.replace('GBP ', ''));
