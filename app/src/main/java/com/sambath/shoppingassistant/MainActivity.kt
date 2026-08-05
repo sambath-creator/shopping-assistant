@@ -81,9 +81,11 @@ import com.sambath.shoppingassistant.ui.components.GradientButton
 import com.sambath.shoppingassistant.ui.components.rememberSpringPressState
 import com.sambath.shoppingassistant.ui.components.springPress
 import com.sambath.shoppingassistant.ui.theme.ShoppingAssistantTheme
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         NotificationHelper.createChannel(this)
         setContent {

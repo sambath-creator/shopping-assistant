@@ -5,4 +5,10 @@
         <item name="android:navigationBarColor">#F7FBFF</item>
         <item name="android:statusBarColor">#F7FBFF</item>
     </style>
+
+    <style name="Theme.ShoppingAssistant.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#F7FBFF</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.ShoppingAssistant</item>
+    </style>
 </resources>

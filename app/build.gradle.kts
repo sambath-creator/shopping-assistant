@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.dynamicanimation:dynamicanimation:1.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("androidx.compose.animation:animation")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
